@@ -14,7 +14,7 @@ dataset = pd.read_excel ("base.xlsx")
 # print(model_est.summary())
 
 plt.clf()
-sb.scatterplot(dataset, x = "exp", y = "salary")
+sb.scatterplot(dataset, x = "child", y = "salary")
 plt.show()
 
 
