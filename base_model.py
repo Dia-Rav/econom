@@ -9,7 +9,7 @@ import statsmodels.stats.api as sms
 
 dataset = pd.read_excel ("base.xlsx") 
 
-# model = smf.ols("salary ~ gender + week + exp +I(exp**2) + gender + degree + marriage + v_age + gender:child + child + C(sphere)", data=dataset)
+# model = smf.ols("salary ~ gender + week + exp +I(exp**2) + degree + marriage + v_age + gender:child + child + C(sphere)", data=dataset)
 # model_est = model.fit()
 # print(model_est.summary())
 
@@ -18,7 +18,7 @@ dataset = pd.read_excel ("base.xlsx")
 # оказывается что ввобще брак увеличивает зп на 1.018e+04 
 # на для женщин этот рост меньше 
 
-model = smf.ols("salary ~ gender + week + exp +I(exp**2) + gender + degree + marriage + v_age + gender:child + child + gender:marriage + C(sphere)", data=dataset)
+model = smf.ols("salary ~ gender + week + exp +I(exp**2) + degree + marriage + v_age + gender:child + child + gender:marriage + C(sphere)", data=dataset)
 model_est = model.fit()
 print(model_est.summary())
 
