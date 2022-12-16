@@ -9,6 +9,8 @@ import statsmodels.stats.api as sms
 
 
 dataset = pd.read_excel ("base.xlsx") 
+dataset_m = pd.read_excel ("base_male.xlsx")
+dataset_f = pd.read_excel ("base_female.xlsx")
 
 model = smf.ols("salary ~ gender + week + exp +I(exp**2) + degree + marriage + v_age + child + C(sphere)", data=dataset)
 model_est = model.fit()
@@ -25,6 +27,7 @@ print(model3_est.summary())
 model4 = smf.ols("salary ~ gender + week + exp +I(exp**2) + degree + marriage + v_age + child + gender:child + gender:marriage + C(sphere)", data=dataset)
 model4_est = model4.fit()
 print(model4_est.summary())
+
 
 
 # plt.clf()
