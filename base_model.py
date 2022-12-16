@@ -9,26 +9,11 @@ import statsmodels.stats.api as sms
 
 
 dataset = pd.read_excel ("base.xlsx") 
-dataset_m = pd.read_excel ("base_male.xlsx")
-dataset_f = pd.read_excel ("base_female.xlsx")
+print(dataset.head())
 
-model = smf.ols("salary ~ gender + week + exp +I(exp**2) + degree + marriage + v_age + child + C(sphere)", data=dataset)
-model_est = model.fit()
-print(model_est.summary())
-
-model2 = smf.ols("salary ~ gender + week + exp +I(exp**2) + degree + marriage + v_age + child + gender:child + C(sphere)", data=dataset)
-model2_est = model2.fit()
-print(model2_est.summary())
-
-model3 = smf.ols("salary ~ gender + week + exp +I(exp**2) + degree + marriage + v_age + child + gender:marriage + C(sphere)", data=dataset)
-model3_est = model3.fit()
-print(model3_est.summary())
-
-model4 = smf.ols("salary ~ gender + week + exp +I(exp**2) + degree + marriage + v_age + child + gender:child + gender:marriage + C(sphere)", data=dataset)
-model4_est = model4.fit()
-print(model4_est.summary())
-
-
+# model = smf.ols("salary ~ gender + exp +I(exp**2) + degree + marriage + age + C(sphere)", data=dataset)
+# model_est = model.fit()
+# print(model_est.summary())
 
 # plt.clf()
 # sb.scatterplot(dataset, x = "child", y = "salary")
@@ -97,7 +82,7 @@ print(model4_est.summary())
 # fvalue: float The f-statistic of the hypothesis that the error variance does not depend on x. This is an alternative test variant not the original LM test.
 # f_pvalue: float The p-value for the f-statistic.
 
-plt.clf()
-sb.scatterplot(dataset, x="v_age", y="salary")
-sb.lmplot(dataset, x="v_age", y="salary", ci=None)
-plt.show()
+# plt.clf()
+# sb.scatterplot(dataset, x="v_age", y="salary")
+# sb.lmplot(dataset, x="v_age", y="salary", ci=None)
+# plt.show()
