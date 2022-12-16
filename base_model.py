@@ -12,19 +12,19 @@ dataset = pd.read_excel ("base.xlsx")
 
 model = smf.ols("salary ~ gender + week + exp +I(exp**2) + degree + marriage + v_age + child + C(sphere)", data=dataset)
 model_est = model.fit()
-# print(model_est.summary())
+print(model_est.summary())
 
 model2 = smf.ols("salary ~ gender + week + exp +I(exp**2) + degree + marriage + v_age + child + gender:child + C(sphere)", data=dataset)
 model2_est = model2.fit()
-# print(model2_est.summary())
+print(model2_est.summary())
 
 model3 = smf.ols("salary ~ gender + week + exp +I(exp**2) + degree + marriage + v_age + child + gender:marriage + C(sphere)", data=dataset)
 model3_est = model3.fit()
-# print(model3_est.summary())
+print(model3_est.summary())
 
 model4 = smf.ols("salary ~ gender + week + exp +I(exp**2) + degree + marriage + v_age + child + gender:child + gender:marriage + C(sphere)", data=dataset)
 model4_est = model4.fit()
-# print(model4_est.summary())
+print(model4_est.summary())
 
 
 # plt.clf()
@@ -36,10 +36,14 @@ model4_est = model4.fit()
 # plt.show()
 
 
-#критерий Акаике
+# критерий Акаике
 # Таким образом, критерий не только вознаграждает за качество приближения, 
 # но и штрафует за использование излишнего количества параметров модели. 
 # Считается, что наилучшей будет модель с наименьшим значением критерия AIC.
+# print(model_est.aic)
+# print(model2_est.aic)
+# print(model3_est.aic)
+# print(model4_est.aic)
 # 3631.2297869129725
 # 3628.1231509833747
 # 3626.4554268413963
@@ -68,9 +72,9 @@ model4_est = model4.fit()
 # print(sms.het_breuschpagan(model3_est.resid, model3.exog))
 # print(sms.het_breuschpagan(model4_est.resid, model4.exog))
 
-# (40.46260269551623, 0.07665277838473605, 1.5106278480053188, 0.0609003187276317)
+# (40.46260269551623, 0.07665277838473605, 1.5106278480053188, 0.0609003187276317)   
 # (42.85443167811152, 0.060349186001638896, 1.5648840811113025, 0.044745809247933456)
-# (37.89817204378537, 0.152381559879282, 1.3307716034567847, 0.13811430776820818)
+# (37.89817204378537, 0.152381559879282, 1.3307716034567847, 0.13811430776820818)    
 # (41.34440629532407, 0.10142973690863587, 1.432870719521403, 0.08406713932862535)
 # lm: float lagrange multiplier statistic
 # lm_pvalue: float p-value of lagrange multiplier test
@@ -90,3 +94,7 @@ model4_est = model4.fit()
 # fvalue: float The f-statistic of the hypothesis that the error variance does not depend on x. This is an alternative test variant not the original LM test.
 # f_pvalue: float The p-value for the f-statistic.
 
+plt.clf()
+sb.scatterplot(dataset, x="v_age", y="salary")
+sb.lmplot(dataset, x="v_age", y="salary", ci=None)
+plt.show()
