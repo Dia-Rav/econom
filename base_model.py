@@ -10,7 +10,7 @@ from statsmodels.stats.outliers_influence import variance_inflation_factor  as v
 # Проверьте чувствительность, качество подгонки данных моделью
 
 dataset = pd.read_excel ("base.xlsx", engine='openpyxl')
-print(dataset.head())
+# print(dataset.head())
 
 model = smf.ols("np.log(salary) ~ gender + exp + I(exp**2) + degree + age + C (sphere)", data=dataset)
 model_est = model.fit()
@@ -19,7 +19,7 @@ print(model_est.summary())
 #тест Зарембки
 # model = smf.ols("salary_z ~ gender + exp + I(exp**2) + degree + age +C (sphere) + marriage", data=dataset)
 # model_est = model.fit()
-# print(model_est.ssr)
+# # print(model_est.ssr)
 
 # model = smf.ols("np.log(salary_z)~ gender + exp + I(exp**2) + degree + age +C (sphere) + marriage", data=dataset)
 # model_est = model.fit()
@@ -28,7 +28,7 @@ print(model_est.summary())
 # хи = 18.0251854829263...
 
 # тест голдфелда квандта
-print(sms.het_goldfeldquandt(y=model.endog, x=model.exog, idx = 2, split=.3, drop=.4))
+# print(sms.het_goldfeldquandt(y=model.endog, x=model.exog, idx = 2, split=.3, drop=.4))
 # print(sms.het_goldfeldquandt(y=model.endog, x=model.exog, idx = 5, split=.3, drop=.4))
 # (1.0592754435111993, 0.43999116334161426, 'increasing')
 # (1.210007032674096, 0.30258478786068405, 'increasing')
@@ -52,9 +52,9 @@ print(sms.het_goldfeldquandt(y=model.endog, x=model.exog, idx = 2, split=.3, dro
 # Stat: 0.6175, Critical value: 3.8415,     p-value: 0.4320 - degree
 # коэффециенты незначимы, гетерскедостичности нет
 
-# plt.clf()
-# sb.scatterplot(dataset, x="salary", y=model_est.resid ** 2)
-# plt.show()
+plt.clf()
+sb.scatterplot(dataset, x="salary", y=model_est.resid ** 2)
+plt.show()
 
 # Тест Бройша-Пагана.
 # print(sms.het_breuschpagan(model_est.resid, model.exog))
@@ -65,13 +65,9 @@ print(sms.het_goldfeldquandt(y=model.endog, x=model.exog, idx = 2, split=.3, dro
 # (36.40091234383967, 0.08453871312506729, 1.5008137969287692, 0.07073892887533434)
 # на 10 процентном уровне значимости гетереск нет
 
-# from chow_test import chow_test
-# print(chow_test(y_series=pd.Series(model.endog),
-# X_series=pd.DataFrame(model.exog), last_index=1499, first_index=1500, significance=0.05))
-
-for i in range(1, model.exog.shape[1]):
-    vif_est = vif(model.exog, i)
-    print(f"{model_est.params.index[i]:8}: {vif_est:5.4f}")
+# for i in range(1, model.exog.shape[1]):
+#     vif_est = vif(model.exog, i)
+#     print(f"{model_est.params.index[i]:8}: {vif_est:5.4f}")
 
 # Среди эконометристов существует убеждение, что если для одной из переменных >10
 # то в регрессии есть мультиколлинеарность.
