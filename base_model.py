@@ -8,51 +8,33 @@ import statsmodels.formula.api as smf
 import statsmodels.stats.api as sms
 
 
-dataset = pd.read_excel ("base.xlsx") 
+dataset = pd.read_excel ("base.xlsx", engine='openpyxl')
 print(dataset.head())
 
-# model = smf.ols("salary ~ gender + exp +I(exp**2) + degree + marriage + age + C(sphere)", data=dataset)
+model = smf.ols("salary ~ gender + exp + I(exp**2) + degree + age +C (sphere)", data=dataset)
+model_est = model.fit()
+print(model_est.summary())
+
+
+# model = smf.ols("salary_z ~ gender + exp + I(exp**2) + degree + age +C (sphere) + marriage", data=dataset)
 # model_est = model.fit()
-# print(model_est.summary())
+# print(model_est.ssr)
 
-# plt.clf()
-# sb.scatterplot(dataset, x = "child", y = "salary")
-# plt.show()
+# model = smf.ols("np.log(salary_z)~ gender + exp + I(exp**2) + degree + age +C (sphere) + marriage", data=dataset)
+# model_est = model.fit()
+# print(model_est.ssr)
 
-# plt.clf()
-# sb.scatterplot(dataset, x = "salary", y = model_est.resid**2)
-# plt.show()
-
+# хи = 18.0251854829263...
 
 # критерий Акаике
 # Таким образом, критерий не только вознаграждает за качество приближения, 
 # но и штрафует за использование излишнего количества параметров модели. 
 # Считается, что наилучшей будет модель с наименьшим значением критерия AIC.
-# print(model_est.aic)
-# print(model2_est.aic)
-# print(model3_est.aic)
-# print(model4_est.aic)
-# 3631.2297869129725
-# 3628.1231509833747
-# 3626.4554268413963
-# 3619.9477461035076
-
 
 # информационный критерий шварца 
-# print(model_est.bic)
-# print(model2_est.bic)
-# print(model3_est.bic)
-# print(model4_est.bic)
-# 3724.7696012854753
-# 3724.780959168294
-# 3723.1132350263156
-# 3719.723548100844
 # models with lower BIC are generally preferred
 
-
 # print(sms.het_goldfeldquandt(y=model.endog, x=model.exog,split=.35, drop=.3))
-
-
 
 # Тест Бройша-Пагана
 # print(sms.het_breuschpagan(model_est.resid, model.exog))
