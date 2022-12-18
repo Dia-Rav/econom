@@ -53,7 +53,7 @@ print(sms.het_breuschpagan(model_est.resid, model.exog))
 # fvalue: float f-statistic of the hypothesis that the error variance does not depend on x
 # f_pvalue: float p-value for the f-statistic
 # (35.297778981237656, 0.161364364621077, 1.320916410013872, 0.14926613639275754)
-# # на любом уровне значимости нет гетероскедастичности
+# на 10 процентном уровне значимости есть гетероскедастичность
 
 from chow_test import chow_test
 print(chow_test(y_series=pd.Series(model.endog), X_series=pd.DataFrame(model.exog), last_index=1499, first_index=1500, significance=0.05))
@@ -85,7 +85,7 @@ for i in range(1, model.exog.shape[1]):
 #C(sphere)[T.27]: 1.2382
 #C(sphere)[T.28]: 1.2091
 #gender  : 3.9865
-#exp     : 17.0881
+#exp     : 17.0881               Отдельно без квадрата exp: 4.2455
 #I(exp ** 2): 14.6682
 #degree  : 1.3756
 #age     : 4.4752
