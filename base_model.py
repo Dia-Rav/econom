@@ -63,7 +63,7 @@ plt.show()
 # fvalue: float f-statistic of the hypothesis that the error variance does not depend on x
 # f_pvalue: float p-value for the f-statistic
 # (36.40091234383967, 0.08453871312506729, 1.5008137969287692, 0.07073892887533434)
-# на 10 процентном уровне значимости гетереск нет
+# на 5 процентном уровне значимости гетереск нет
 
 # for i in range(1, model.exog.shape[1]):
 #     vif_est = vif(model.exog, i)
