@@ -7,6 +7,16 @@ from statsmodels.stats.outliers_influence import variance_inflation_factor as vi
 
 dataset = pd.read_excel (r"D:\Уроки\3 курс\РАНХ\Эконометрика\Проект\base.xlsx")
 
+
+# тестирование корреляции
+from scipy.stats.stats import pearsonr
+print(pearsonr(dataset['gender'], dataset['marriage']))
+#(-0.16754183924129185, 0.03045077914551489) - корреляция значима на 5% уровне - добавляем
+print(pearsonr(dataset['gender'], dataset['child']))
+#(0.13319592310892073, 0.0861626202810414) - корреляция значима на 10% уровне - добавляем
+
+
+
 # МОДЕЛЬ С НАЛИЧИЕМ БРАКА И ДЕТЕЙ
 
 model = smf.ols("np.log(salary) ~ gender + exp + I(exp**2) + degree + age + C (sphere) + marriage + marriage:gender + child + child:gender", data=dataset)
@@ -59,7 +69,7 @@ print(sms.het_breuschpagan(model_est.resid, model.exog))
 # fvalue: float f-statistic of the hypothesis that the error variance does not depend on x
 # f_pvalue: float p-value for the f-statistic
 # (31.648481652745886, 0.3840520571202679, 1.0600037485925404, 0.39526979473235924)
-# на любом уровне значимости нет гетероскедастичности
+# на 10 процентном уровне значимости есть гетероскедастичность
 
 from chow_test import chow_test
 print(chow_test(y_series=pd.Series(model.endog), X_series=pd.DataFrame(model.exog), last_index=1499, first_index=1500, significance=0.05))
@@ -91,7 +101,7 @@ for i in range(1, model.exog.shape[1]):
 #C(sphere)[T.27]: 1.2507
 #C(sphere)[T.28]: 1.2170
 #gender  : 5.7111
-#exp     : 17.3638
+#exp     : 17.3638          Отдельно без квадрата exp: 4.2517
 #I(exp ** 2): 15.0540
 #degree  : 1.3804
 #age     : 4.5019
