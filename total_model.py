@@ -15,7 +15,7 @@ dataset = pd.read_excel ("base.xlsx", engine='openpyxl')
 model = smf.ols("np.log(salary) ~ gender + exp + I(exp**2) + degree + age + C (sphere) + marriage + marriage:gender + child + child:gender\
 + ", data=dataset)
 model_est = model.fit()
-print(model_est.summary())
+# print(model_est.summary())
 
 # тест голдфелда квандта
 # print(sms.het_goldfeldquandt(y=model.endog, x=model.exog, idx = 2, split=.3, drop=.4))
@@ -43,7 +43,7 @@ print(model_est.summary())
 # коэффециенты незначимы, гетерскедостичности нет
 
 plt.clf()
-sb.scatterplot(dataset, x="salary", y=model_est.resid ** 2)
+sb.scatterplot(dataset, x="age", y = "exp")
 plt.show()
 
 # Тест Бройша-Пагана.
