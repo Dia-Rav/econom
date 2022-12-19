@@ -14,21 +14,21 @@ dataset = pd.read_excel ("base.xlsx", engine='openpyxl')
 
 model = smf.ols("np.log(salary) ~ gender + exp + I(exp**2) + degree + C (sphere) + boss", data=dataset)
 model_est = model.fit()
-print(model_est.summary())
+# print(model_est.summary())
 
-model = smf.ols("np.log(salary) ~ gender + age + I(age**2) + degree + C (sphere) + boss", data=dataset)
+# model = smf.ols("np.log(salary) ~ gender + age + I(age**2) + degree + C (sphere) + boss", data=dataset)
+# model_est = model.fit()
+# print(model_est.summary())
+
+
+# тест Зарембки
+model = smf.ols("salary_z ~ gender + exp + I(exp**2) + degree +C (sphere) + marriage + boss", data=dataset)
 model_est = model.fit()
-print(model_est.summary())
+print(model_est.ssr)
 
-
-#тест Зарембки
-# model = smf.ols("salary_z ~ gender + exp + I(exp**2) + degree +C (sphere) + marriage + boss", data=dataset)
-# model_est = model.fit()
-# # print(model_est.ssr)
-
-# model = smf.ols("np.log(salary_z)~ gender + exp + I(exp**2) + degree +C (sphere) + marriage + boss", data=dataset)
-# model_est = model.fit()
-# print(model_est.ssr)
+model = smf.ols("np.log(salary_z)~ gender + exp + I(exp**2) + degree +C (sphere) + marriage + boss", data=dataset)
+model_est = model.fit()
+print(model_est.ssr)
 
 # хи = 18.0251854829263...
 
