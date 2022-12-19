@@ -1,0 +1,60 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import statsmodels.formula.api as smf
+import statsmodels.stats.api as sms
+import openpyxl
+import seaborn as sb
+from scipy.stats.stats import pearsonr
+from scipy.stats import chi2
+from statsmodels.stats.outliers_influence import variance_inflation_factor as vif
+
+dataset = pd.read_excel("base.xlsx") 
+ 
+
+model = smf.ols("np.log(salary) ~ gender + exp + I(exp**2) + degree + C (sphere) + boss + health_level + alchohol+ regular", data=dataset)
+model_est = model.fit()
+print(model_est.summary())
+
+
+# Тест Бройша-Пагана.
+print(sms.het_breuschpagan(model_est.resid, model.exog))
+# (27.524437035186025, 0.5434327970958486, 0.9321508845761947, 0.5704050931356057) -> Гомоскедостичность
+# f_pvalue = 0.5704050931356057, Гипотеза о гомоскедостичности не отвергается на адекватных уровнях значимости
+
+
+# VIF-тест на мультиколлинеарность
+for i in range(1, model.exog.shape[1]):
+    vif_est = vif(model.exog, i)
+    print(f"{model_est.params.index[i]:8}: {vif_est:5.4f}")
+
+# C(sphere)[T.1]: 2.1735
+# C(sphere)[T.2]: 1.7693
+# C(sphere)[T.3]: 1.2644
+# C(sphere)[T.4]: 1.1562
+# C(sphere)[T.5]: 1.1841
+# C(sphere)[T.6]: 2.4570
+# C(sphere)[T.7]: 3.3177
+# C(sphere)[T.9]: 1.4351
+# C(sphere)[T.10]: 2.1980
+# C(sphere)[T.11]: 1.5551
+# C(sphere)[T.12]: 1.9877
+# C(sphere)[T.13]: 1.7953
+# C(sphere)[T.14]: 4.1299
+# C(sphere)[T.15]: 1.3886
+# C(sphere)[T.16]: 1.2305
+# C(sphere)[T.17]: 2.8973
+# C(sphere)[T.20]: 1.1416
+# C(sphere)[T.21]: 1.3477
+# C(sphere)[T.26]: 1.3633
+# C(sphere)[T.27]: 1.2540
+# C(sphere)[T.28]: 1.2438
+# gender  : 1.4581
+# exp     : 13.5330
+# I(exp ** 2): 12.8737
+# degree  : 1.3628
+# boss    : 1.2432
+# health_level: 1.3467
+# alchohol: 1.2560
+# regular : 1.2589
+

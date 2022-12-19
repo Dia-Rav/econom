@@ -1,0 +1,79 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import statsmodels.formula.api as smf
+import statsmodels.stats.api as sms
+import openpyxl
+import seaborn as sb
+from scipy.stats.stats import pearsonr
+from scipy.stats import chi2
+from statsmodels.stats.outliers_influence import variance_inflation_factor as vif
+
+dataset = pd.read_excel("base.xlsx") 
+
+
+# проверка коррелированности
+print(pearsonr(dataset['gender'], dataset['problems_heath']))
+# PearsonRResult(statistic=-0.0650649238201521, pvalue=0.40492855562040675)
+Отсутсвие корреляции
+
+model = smf.ols("np.log(salary) ~ gender + exp + I(exp**2) + degree + C (sphere) + boss + problems_heath", data=dataset)
+model_est = model.fit()
+print(model_est.summary())
+
+
+# тест голдфелда квандта
+print(sms.het_goldfeldquandt(y=model.endog, x=model.exog, idx = 7, split=.3, drop=.4))
+#(0.4945288195041147, 0.9706507738752908, 'increasing') -> Гомоскедостичность
+
+
+
+# тест глейзера 
+model_aux = smf.ols("abs(model_est.resid) ~ problems_heath", data=dataset)
+model_aux_est = model_aux.fit()
+stat_aux = model_aux_est.ess / ((1 - 2 / np.pi) * np.var(model_est.resid))
+print(f"Stat: {stat_aux:5.4f}, Critical value: {chi2.ppf(0.95, df=model_aux.df_model):5.4f}, \
+p-value: {1 - chi2.cdf(stat_aux, df=model_aux.df_model):5.4f}")
+# Stat: 1.6505, Critical value: 3.8415, p-value: 0.1989 -> Гомоскедостичность
+
+
+# Тест Бройша-Пагана.
+print(sms.het_breuschpagan(model_est.resid, model.exog))
+# (28.996641974458726, 0.3610620101970813, 1.0817622364623884, 0.36985999925559376)
+# f_pvalue = 0.36985999925559376, Гипотеза о гомоскедостичности не отвергается на адекватных уровнях значимости
+
+
+# VIF-тест на мультиколлинеарность
+for i in range(1, model.exog.shape[1]):
+    vif_est = vif(model.exog, i)
+    print(f"{model_est.params.index[i]:8}: {vif_est:5.4f}")
+
+# C(sphere)[T.1]: 2.1097
+# C(sphere)[T.2]: 1.7688
+# C(sphere)[T.3]: 1.2424
+# C(sphere)[T.4]: 1.1383
+# C(sphere)[T.5]: 1.1559
+# C(sphere)[T.6]: 2.4177
+# C(sphere)[T.7]: 3.2201
+# C(sphere)[T.9]: 1.4093
+# C(sphere)[T.10]: 2.1857
+# C(sphere)[T.11]: 1.5268
+# C(sphere)[T.12]: 1.9841
+# C(sphere)[T.13]: 1.7795
+# C(sphere)[T.14]: 4.0682
+# C(sphere)[T.15]: 1.3448
+# C(sphere)[T.16]: 1.2241
+# C(sphere)[T.17]: 2.6868
+# C(sphere)[T.20]: 1.1437
+# C(sphere)[T.21]: 1.3068
+# C(sphere)[T.26]: 1.3570
+# C(sphere)[T.27]: 1.2258
+# C(sphere)[T.28]: 1.2361
+# gender  : 1.4296
+# exp     : 13.4529
+# I(exp ** 2): 12.9022
+# degree  : 1.3238
+# boss    : 1.2134
+# problems_heath: 1.2156
+
+
