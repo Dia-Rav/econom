@@ -12,9 +12,9 @@ from statsmodels.stats.outliers_influence import variance_inflation_factor  as v
 dataset = pd.read_excel ("base.xlsx", engine='openpyxl')
 # print(dataset.head())
 
-# model = smf.ols("np.log(salary) ~ gender + exp + I(exp**2) + degree + C (sphere) + boss", data=dataset)
-# model_est = model.fit()
-# # print(model_est.summary())
+model = smf.ols("np.log(salary) ~ gender + exp + I(exp**2) + degree + C (sphere) + boss", data=dataset)
+model_est = model.fit()
+print(model_est.summary())
 
 model = smf.ols("np.log(salary) ~ gender + age + I(age**2) + degree + C (sphere) + boss", data=dataset)
 model_est = model.fit()
@@ -54,9 +54,9 @@ print(model_est.summary())
 
 # коэффециенты незначимы, гетерскедостичности нет
 
-    # plt.clf()
-    # sb.scatterplot(dataset, x="age", y="exp")
-    # plt.show()
+# plt.clf()
+# sb.scatterplot(dataset, x="age", y="exp")
+# plt.show()
 
 # Тест Бройша-Пагана.
 # print(sms.het_breuschpagan(model_est.resid, model.exog))
