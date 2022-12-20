@@ -22,13 +22,13 @@ model_est = model.fit()
 
 
 # тест Зарембки
-model = smf.ols("salary_z ~ gender + exp + I(exp**2) + degree +C (sphere) + marriage + boss", data=dataset)
-model_est = model.fit()
-print(model_est.ssr)
+# model = smf.ols("salary_z ~ gender + exp + I(exp**2) + degree +C (sphere) + marriage + boss", data=dataset)
+# model_est = model.fit()
+# # print(model_est.ssr)
 
-model = smf.ols("np.log(salary_z)~ gender + exp + I(exp**2) + degree +C (sphere) + marriage + boss", data=dataset)
-model_est = model.fit()
-print(model_est.ssr)
+# model = smf.ols("np.log(salary_z)~ gender + exp + I(exp**2) + degree +C (sphere) + marriage + boss", data=dataset)
+# model_est = model.fit()
+# # print(model_est.ssr)
 
 # хи = 18.0251854829263...
 
@@ -42,15 +42,17 @@ print(model_est.ssr)
 
 
 # тест глейзера 
-# from scipy.stats import chi2
-# model_aux = smf.ols("abs(model_est.resid) ~ exp", data=dataset)
-# model_aux_est = model_aux.fit()
-# stat_aux = model_aux_est.ess / ((1 - 2 / np.pi) * np.var(model_est.resid))
-# print(f"Stat: {stat_aux:5.4f}, Critical value: {chi2.ppf(0.95, df=model_aux.df_model):5.4f}, \
-# p-value: {1 - chi2.cdf(stat_aux, df=model_aux.df_model):5.4f}")
+from scipy.stats import chi2
+model_aux = smf.ols("abs(model_est.resid) ~ boss", data=dataset)
+model_aux_est = model_aux.fit()
+stat_aux = model_aux_est.ess / ((1 - 2 / np.pi) * np.var(model_est.resid))
+print(f"Stat: {stat_aux:5.4f}, Critical value: {chi2.ppf(0.95, df=model_aux.df_model):5.4f}, \
+p-value: {1 - chi2.cdf(stat_aux, df=model_aux.df_model):5.4f}")
 
 # Stat: 1.2490, Critical value: 3.8415, p-value: 0.2637 - exp
 # Stat: 2.0498, Critical value: 3.8415, p-value: 0.1522 - degree
+# Stat: 0.0262, Critical value: 3.8415, p-value: 0.8714 - gender
+
 
 # коэффециенты незначимы, гетерскедостичности нет
 
