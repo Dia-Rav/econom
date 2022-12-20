@@ -1,0 +1,83 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import statsmodels.formula.api as smf
+import statsmodels.stats.api as sms
+import openpyxl
+import seaborn as sb
+from scipy.stats.stats import pearsonr
+from scipy.stats import chi2
+from statsmodels.stats.outliers_influence import variance_inflation_factor as vif
+
+dataset = pd.read_excel("base.xlsx") 
+
+
+print(pearsonr(dataset['gender'], dataset['alchohol']))
+# PearsonRResult(statistic=0.13294906380058572, pvalue=0.08771541316189006)
+#статистически значимая небольшая корреляция
+
+model = smf.ols("np.log(salary) ~ gender + exp + I(exp**2) + degree + C (sphere) + boss + alchohol + alchohol:gender", data=dataset)
+model_est = model.fit()
+print(model_est.summary())
+
+
+# тест голдфелда квандта
+print(sms.het_goldfeldquandt(y=model.endog, x=model.exog, idx = 7, split=.3, drop=.4))
+# (0.46801099801208773, 0.9772305639569812, 'increasing') ->Гомоскедостичность не отвеграется на адекватном уровне значимости
+print(sms.het_goldfeldquandt(y=model.endog, x=model.exog, idx = 8, split=.3, drop=.4))
+# (1.908361395953698, 0.05079027885659499, 'increasing')->Гомоскедостичность отвеграется на уровне значимости 5% и выше
+
+
+# тест глейзера 
+model_aux = smf.ols("abs(model_est.resid) ~ alchohol", data=dataset)
+model_aux_est = model_aux.fit()
+stat_aux = model_aux_est.ess / ((1 - 2 / np.pi) * np.var(model_est.resid))
+print(f"Stat: {stat_aux:5.4f}, Critical value: {chi2.ppf(0.95, df=model_aux.df_model):5.4f}, \
+p-value: {1 - chi2.cdf(stat_aux, df=model_aux.df_model):5.4f}")
+# Stat: 0.1306, Critical value: 3.8415, p-value: 0.7178 ->Гомоскедостичность
+model_aux = smf.ols("abs(model_est.resid) ~ alchohol:gender", data=dataset)
+model_aux_est = model_aux.fit()
+stat_aux = model_aux_est.ess / ((1 - 2 / np.pi) * np.var(model_est.resid))
+print(f"Stat: {stat_aux:5.4f}, Critical value: {chi2.ppf(0.95, df=model_aux.df_model):5.4f}, \
+p-value: {1 - chi2.cdf(stat_aux, df=model_aux.df_model):5.4f}")
+# Stat: 0.0068, Critical value: 3.8415, p-value: 0.9345 ->Гомоскедостичность
+
+# Тест Бройша-Пагана.
+print(sms.het_breuschpagan(model_est.resid, model.exog))
+# (28.40338722162489, 0.44323292078940096, 1.0100082643204855, 0.4607244819294901)
+# f_pvalue = 0.4607244819294901, Гипотеза о гомоскедостичности не отвергается на адекватных уровнях значимости
+
+
+# VIF-тест на мультиколлинеарность
+for i in range(1, model.exog.shape[1]):
+    vif_est = vif(model.exog, i)
+    print(f"{model_est.params.index[i]:8}: {vif_est:5.4f}")
+
+# C(sphere)[T.1]: 2.1073
+# C(sphere)[T.2]: 1.7468
+# C(sphere)[T.3]: 1.2490
+# C(sphere)[T.4]: 1.1689
+# C(sphere)[T.5]: 1.1735
+# C(sphere)[T.6]: 2.4506
+# C(sphere)[T.7]: 3.2112
+# C(sphere)[T.9]: 1.4547
+# C(sphere)[T.10]: 2.1769
+# C(sphere)[T.11]: 1.5492
+# C(sphere)[T.12]: 1.9767
+# C(sphere)[T.13]: 1.8355
+# C(sphere)[T.14]: 4.1061
+# C(sphere)[T.15]: 1.3401
+# C(sphere)[T.16]: 1.2418
+# C(sphere)[T.17]: 2.6727
+# C(sphere)[T.20]: 1.1466
+# C(sphere)[T.21]: 1.3165
+# C(sphere)[T.26]: 1.3487
+# C(sphere)[T.27]: 1.2295
+# C(sphere)[T.28]: 1.2342
+# gender  : 1.9038
+# exp     : 13.3876
+# I(exp ** 2): 12.8141
+# degree  : 1.3418
+# boss    : 1.2205
+# alchohol: 3.4701
+# alchohol:gender: 4.3632

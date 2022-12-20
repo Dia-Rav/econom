@@ -1,0 +1,78 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import statsmodels.formula.api as smf
+import statsmodels.stats.api as sms
+import openpyxl
+import seaborn as sb
+from scipy.stats.stats import pearsonr
+from scipy.stats import chi2
+from statsmodels.stats.outliers_influence import variance_inflation_factor as vif
+
+dataset = pd.read_excel("base.xlsx") 
+
+
+# проверка коррелированности
+
+print(pearsonr(dataset['gender'], dataset['health_level']))
+# PearsonRResult(statistic=0.06518553225941003, pvalue=0.40405646688249097)
+
+
+model = smf.ols("np.log(salary) ~ gender + exp + I(exp**2) + degree + C (sphere) + boss + health_level", data=dataset)
+model_est = model.fit()
+print(model_est.summary())
+
+
+# тест голдфелда квандта
+print(sms.het_goldfeldquandt(y=model.endog, x=model.exog, idx = 7, split=.3, drop=.4))
+# (0.5565706731749585, 0.9427561378370802, 'increasing') -> Гомоскедостичность 
+
+
+
+# тест глейзера 
+model_aux = smf.ols("abs(model_est.resid) ~ health_level", data=dataset)
+model_aux_est = model_aux.fit()
+stat_aux = model_aux_est.ess / ((1 - 2 / np.pi) * np.var(model_est.resid))
+print(f"Stat: {stat_aux:5.4f}, Critical value: {chi2.ppf(0.95, df=model_aux.df_model):5.4f}, \
+p-value: {1 - chi2.cdf(stat_aux, df=model_aux.df_model):5.4f}")
+# Stat: 1.2519, Critical value: 3.8415, p-value: 0.2632 -> Гомоскедостичность
+
+
+# Тест Бройша-Пагана.
+print(sms.het_breuschpagan(model_est.resid, model.exog))
+# (28.75205051347795, 0.3730241427424513, 1.070725831580429, 0.3831020910241308)
+# f_pvalue = 0.3831020910241308, Гипотеза о гомоскедостичности не отвергается на адекватных уровнях значимости
+
+
+# VIF-тест на мультиколлинеарность
+for i in range(1, model.exog.shape[1]):
+    vif_est = vif(model.exog, i)
+    print(f"{model_est.params.index[i]:8}: {vif_est:5.4f}")
+
+# C(sphere)[T.1]: 2.1272
+# C(sphere)[T.2]: 1.7653
+# C(sphere)[T.3]: 1.2465
+# C(sphere)[T.4]: 1.1437
+# C(sphere)[T.5]: 1.1414
+# C(sphere)[T.6]: 2.4288
+# C(sphere)[T.7]: 3.2190
+# C(sphere)[T.9]: 1.4018
+# C(sphere)[T.10]: 2.1663
+# C(sphere)[T.11]: 1.5280
+# C(sphere)[T.12]: 1.9716
+# C(sphere)[T.13]: 1.7795
+# C(sphere)[T.14]: 4.0892
+# C(sphere)[T.15]: 1.3681
+# C(sphere)[T.16]: 1.2242
+# C(sphere)[T.17]: 2.7434
+# C(sphere)[T.20]: 1.1328
+# C(sphere)[T.21]: 1.2854
+# C(sphere)[T.26]: 1.3572
+# C(sphere)[T.27]: 1.2337
+# C(sphere)[T.28]: 1.2324
+# gender  : 1.4291
+# exp     : 13.5224
+# I(exp ** 2): 12.7763
+# degree  : 1.3260
+# boss    : 1.2230
+# health_level: 1.2495
